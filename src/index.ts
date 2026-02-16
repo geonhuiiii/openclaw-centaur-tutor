@@ -104,4 +104,6 @@ const centaurTutorPlugin = {
   },
 };
 
-export default centaurTutorPlugin;
+// CommonJS 직접 export — OpenClaw이 require()로 로드할 때
+// exports.default가 아닌 module.exports 자체가 플러그인이어야 함
+module.exports = centaurTutorPlugin;
