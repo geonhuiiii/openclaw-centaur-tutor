@@ -43,7 +43,8 @@ export class SpacedRepetitionEngine {
    * 오늘 복기 대상인 퀴즈 목록 반환
    */
   getDueQuizzes(): QuizItem[] {
-    const dueIds = this.store.getDueQuizIds();
+    const raw = this.store.getDueQuizIds();
+    const dueIds = Array.isArray(raw) ? raw : [];
     return dueIds
       .map((id) => this.store.getQuiz(id))
       .filter((q): q is QuizItem => q !== undefined);
@@ -189,7 +190,8 @@ export class SpacedRepetitionEngine {
     struggling: number;
     averageCorrectRate: number;
   } {
-    const allMetas = this.store.getAllSRMetas();
+    const raw = this.store.getAllSRMetas();
+    const allMetas = Array.isArray(raw) ? raw : [];
     const now = new Date().toISOString();
 
     const dueToday = allMetas.filter((m) => m.nextReviewDate <= now).length;

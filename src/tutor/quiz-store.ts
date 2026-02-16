@@ -41,8 +41,7 @@ export class QuizStore {
       if (fs.existsSync(this.filePath)) {
         const raw = fs.readFileSync(this.filePath, "utf-8");
         const parsed = JSON.parse(raw);
-        // 기본값과 병합하여 누락된 배열 필드 보장
-        return { ...this.createEmpty(), ...parsed };
+        return this.sanitize(parsed);
       }
     } catch (err) {
       console.error("[QuizStore] DB 로드 실패:", err);
@@ -68,6 +67,19 @@ export class QuizStore {
       sparringSessions: [],
       weeklyReports: [],
       lastUpdated: new Date().toISOString(),
+    };
+  }
+
+  /** DB 객체의 모든 배열 필드를 보장 (null/undefined → []) */
+  private sanitize(raw: any): QuizDatabase {
+    return {
+      quizzes: Array.isArray(raw?.quizzes) ? raw.quizzes : [],
+      reviews: Array.isArray(raw?.reviews) ? raw.reviews : [],
+      spacedRepetition: Array.isArray(raw?.spacedRepetition) ? raw.spacedRepetition : [],
+      sessions: Array.isArray(raw?.sessions) ? raw.sessions : [],
+      sparringSessions: Array.isArray(raw?.sparringSessions) ? raw.sparringSessions : [],
+      weeklyReports: Array.isArray(raw?.weeklyReports) ? raw.weeklyReports : [],
+      lastUpdated: raw?.lastUpdated ?? new Date().toISOString(),
     };
   }
 
@@ -142,15 +154,17 @@ export class QuizStore {
 
   /** 특정 퀴즈의 복기 기록 조회 */
   getReviewsForQuiz(quizId: string): ReviewRecord[] {
-    return this.db.reviews.filter((r) => r.quizId === quizId);
+    const reviews = Array.isArray(this.db.reviews) ? this.db.reviews : [];
+    return reviews.filter((r) => r.quizId === quizId);
   }
 
   /** 최근 N일 내 복기 기록 */
   getRecentReviews(days: number): ReviewRecord[] {
+    const reviews = Array.isArray(this.db.reviews) ? this.db.reviews : [];
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - days);
     const cutoffStr = cutoff.toISOString();
-    return this.db.reviews.filter((r) => r.reviewedAt >= cutoffStr);
+    return reviews.filter((r) => r.reviewedAt >= cutoffStr);
   }
 
   // ────────────────────────────────────────
@@ -159,6 +173,7 @@ export class QuizStore {
 
   /** SR 메타 조회 또는 생성 */
   getOrCreateSRMeta(quizId: string, firstReviewDate: string): SpacedRepetitionMeta {
+    if (!Array.isArray(this.db.spacedRepetition)) this.db.spacedRepetition = [];
     let meta = this.db.spacedRepetition.find((m) => m.quizId === quizId);
     if (!meta) {
       meta = {
@@ -177,6 +192,7 @@ export class QuizStore {
 
   /** SR 메타 업데이트 */
   updateSRMeta(quizId: string, updates: Partial<SpacedRepetitionMeta>): void {
+    if (!Array.isArray(this.db.spacedRepetition)) this.db.spacedRepetition = [];
     const idx = this.db.spacedRepetition.findIndex((m) => m.quizId === quizId);
     if (idx >= 0) {
       this.db.spacedRepetition[idx] = { ...this.db.spacedRepetition[idx], ...updates };
@@ -187,14 +203,16 @@ export class QuizStore {
   /** 오늘 복기 대상인 퀴즈 목록 */
   getDueQuizIds(asOf?: string): string[] {
     const now = asOf ?? new Date().toISOString();
-    return this.db.spacedRepetition
+    const sr = Array.isArray(this.db.spacedRepetition) ? this.db.spacedRepetition : [];
+    return sr
       .filter((m) => m.nextReviewDate <= now)
       .map((m) => m.quizId);
   }
 
   /** 전체 SR 메타 */
   getAllSRMetas(): SpacedRepetitionMeta[] {
-    return [...this.db.spacedRepetition];
+    const sr = Array.isArray(this.db.spacedRepetition) ? this.db.spacedRepetition : [];
+    return [...sr];
   }
 
   // ────────────────────────────────────────
@@ -265,14 +283,20 @@ export class QuizStore {
     totalSparrings: number;
     overallCorrectRate: number;
   } {
-    const totalReviews = this.db.reviews.length;
-    const correctReviews = this.db.reviews.filter((r) => r.result === "pass").length;
+    // 방어적 접근: 배열이 아닌 경우 빈 배열로 대체
+    const reviews = Array.isArray(this.db.reviews) ? this.db.reviews : [];
+    const quizzes = Array.isArray(this.db.quizzes) ? this.db.quizzes : [];
+    const sessions = Array.isArray(this.db.sessions) ? this.db.sessions : [];
+    const sparringSessions = Array.isArray(this.db.sparringSessions) ? this.db.sparringSessions : [];
+
+    const totalReviews = reviews.length;
+    const correctReviews = reviews.filter((r) => r.result === "pass").length;
 
     return {
-      totalQuizzes: this.db.quizzes.length,
+      totalQuizzes: quizzes.length,
       totalReviews,
-      totalSessions: this.db.sessions.length,
-      totalSparrings: this.db.sparringSessions.length,
+      totalSessions: sessions.length,
+      totalSparrings: sparringSessions.length,
       overallCorrectRate: totalReviews > 0 ? (correctReviews / totalReviews) * 100 : 0,
     };
   }
