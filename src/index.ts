@@ -107,7 +107,7 @@ const centaurTutorPlugin = {
     api.registerTool({
       name: "centaur_quiz",
       description: "현재 복기 대상 퀴즈를 즉시 받습니다.",
-      parameters: { type: "object", properties: {} },
+      parameters: { type: "object", properties: {}, required: [] },
       execute: async () => {
         try {
           const t = ensureTutor();
@@ -125,7 +125,7 @@ const centaurTutorPlugin = {
     api.registerTool({
       name: "centaur_report",
       description: "현재 학습 현황 대시보드를 확인합니다.",
-      parameters: { type: "object", properties: {} },
+      parameters: { type: "object", properties: {}, required: [] },
       execute: async () => {
         try {
           const t = ensureTutor();
@@ -152,6 +152,7 @@ const centaurTutorPlugin = {
             description: "새 학습 수준 (비워두면 현재 수준 표시)",
           },
         },
+        required: [],
       },
       execute: async (params: { level?: string }) => {
         try {
