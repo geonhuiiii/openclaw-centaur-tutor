@@ -2,7 +2,7 @@
   "name": "openclaw-centaur-tutor",
   "version": "1.0.0",
   "description": "OpenClaw 켄타우로스 학습 코치 스킬 — 에빙하우스 망각곡선 기반 자동 복기, 가상 스파링, 적응형 퀴즈를 cron으로 스케줄링합니다.",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/index.ts",
@@ -39,7 +39,7 @@
   },
   "openclaw": {
     "extensions": [
-      "./dist/index.js"
+      "./index.js"
     ]
   },
   "devDependencies": {
