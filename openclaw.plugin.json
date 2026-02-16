@@ -1,0 +1,69 @@
+{
+  "id": "openclaw-centaur-tutor",
+  "version": "1.0.0",
+  "description": "켄타우로스 학습 코치 — 에빙하우스 망각곡선 기반 자동 복기, 가상 스파링, 적응형 퀴즈를 cron으로 스케줄링하는 OpenClaw 스킬",
+  "skills": ["src/skills"],
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "channel": {
+        "type": "string",
+        "description": "복기 질문을 보낼 메신저 채널 (예: 텔레그램 chat ID, Discord #channel)"
+      },
+      "timezone": {
+        "type": "string",
+        "default": "Asia/Seoul",
+        "description": "cron 스케줄에 사용할 타임존"
+      },
+      "studyLogsDir": {
+        "type": "string",
+        "default": "./study_logs",
+        "description": "학습 노트 파일이 저장되는 폴더 경로"
+      },
+      "dataDir": {
+        "type": "string",
+        "default": "./data",
+        "description": "퀴즈 DB 및 학습 데이터가 저장되는 폴더 경로"
+      },
+      "userLevel": {
+        "type": "string",
+        "default": "intermediate",
+        "enum": ["beginner", "intermediate", "advanced", "expert"],
+        "description": "학습자의 현재 수준 (ELO 기반 난이도 조절에 사용)"
+      },
+      "language": {
+        "type": "string",
+        "default": "ko",
+        "description": "응답 언어 (ko, en, ja 등)"
+      },
+      "reviewSchedule": {
+        "type": "object",
+        "description": "에빙하우스 망각곡선 기반 복기 스케줄 (일 단위)",
+        "properties": {
+          "intervals": {
+            "type": "array",
+            "items": { "type": "number" },
+            "default": [1, 3, 7, 14, 30],
+            "description": "복기 간격 (일). 기본값: 1일, 3일, 7일, 14일, 30일"
+          },
+          "morningCron": {
+            "type": "string",
+            "default": "0 8 * * *",
+            "description": "아침 복기 cron 표현식"
+          },
+          "eveningCron": {
+            "type": "string",
+            "default": "0 21 * * *",
+            "description": "저녁 복기 cron 표현식"
+          },
+          "weeklyReportCron": {
+            "type": "string",
+            "default": "0 10 * * 0",
+            "description": "주간 리포트 cron 표현식"
+          }
+        }
+      }
+    },
+    "required": ["channel"]
+  }
+}

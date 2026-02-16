@@ -1,0 +1,48 @@
+name: centaur-tutor
+description: |
+  켄타우로스 학습 코치 — 에빙하우스 망각곡선 기반 자동 복기 시스템.
+  바둑/체스의 'AI 엔진 기반 학습법'을 학문에 적용합니다.
+  - 지식 적재 (Ingest): 학습 노트에서 Q&A 자동 추출
+  - 가상 스파링 (Spar): AI 압박 면접관 모드
+  - 자동 복기 (Review): cron 기반 에빙하우스 망각곡선 복습
+  - 주간 리포트 (Report): 약점 분석 및 메타인지 강화
+version: 1.0.0
+
+triggers:
+  # ── Cron 스케줄 트리거 ──
+  - type: schedule
+    cron: "0 8 * * *"          # 매일 08:00 — 1일/3일/7일/30일 차 복기 질문
+    handler: handleDailyReview
+
+  - type: schedule
+    cron: "0 21 * * *"         # 매일 21:00 — 저녁 복기 (당일 학습 요약)
+    handler: handleEveningReview
+
+  - type: schedule
+    cron: "0 10 * * 0"         # 매주 일요일 10:00 — 주간 약점 리포트
+    handler: handleWeeklyReport
+
+  # ── 사용자 명령 트리거 ──
+  - type: command
+    command: /study
+    description: "학습 내용을 입력하여 Q&A를 생성합니다"
+
+  - type: command
+    command: /spar
+    description: "가상 스파링 — AI 압박 면접관이 논리를 검증합니다"
+
+  - type: command
+    command: /quiz
+    description: "현재 복습 대상 퀴즈를 즉시 받습니다"
+
+  - type: command
+    command: /report
+    description: "학습 현황 및 약점 리포트를 확인합니다"
+
+  - type: command
+    command: /level
+    description: "현재 학습 수준(ELO)을 확인하거나 조정합니다"
+
+permissions:
+  - storage      # quiz_db.json 등 데이터 저장
+  - network      # OpenClaw Gateway 메시지 전송

@@ -1,0 +1,52 @@
+{
+  "name": "openclaw-centaur-tutor",
+  "version": "1.0.0",
+  "description": "OpenClaw 켄타우로스 학습 코치 스킬 — 에빙하우스 망각곡선 기반 자동 복기, 가상 스파링, 적응형 퀴즈를 cron으로 스케줄링합니다.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "lint": "eslint src/",
+    "test": "jest"
+  },
+  "keywords": [
+    "openclaw",
+    "tutor",
+    "centaur-learning",
+    "spaced-repetition",
+    "ebbinghaus",
+    "active-recall",
+    "cron",
+    "ai-tutor",
+    "learning-coach"
+  ],
+  "author": "geonhui",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/geonhui/openclaw-centaur-tutor"
+  },
+  "homepage": "https://github.com/geonhui/openclaw-centaur-tutor#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "cron": "^3.1.9",
+    "dayjs": "^1.11.13",
+    "dotenv": "^17.3.1",
+    "node-fetch": "^3.3.2",
+    "uuid": "^10.0.0"
+  },
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/cron": "^2.4.0",
+    "@types/node": "^22.0.0",
+    "@types/uuid": "^10.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.0"
+  }
+}
