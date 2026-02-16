@@ -57,7 +57,7 @@ const centaurTutorPlugin = {
         },
         required: ["text"],
       },
-      handler: async (params: { text: string; topic?: string }) => {
+      execute: async (params: { text: string; topic?: string }) => {
         try {
           const result = await tutor.ingestStudyNote(params.text, params.topic);
           return { success: true, message: result.message };
@@ -80,7 +80,7 @@ const centaurTutorPlugin = {
         },
         required: ["topic"],
       },
-      handler: async (params: { topic: string }) => {
+      execute: async (params: { topic: string }) => {
         try {
           const { firstChallenge, systemPrompt } = tutor.startSparring(params.topic);
           return { success: true, message: firstChallenge, systemPrompt };
@@ -97,7 +97,7 @@ const centaurTutorPlugin = {
       name: "centaur_quiz",
       description: "현재 복기 대상 퀴즈를 즉시 받습니다.",
       parameters: { type: "object", properties: {} },
-      handler: async () => {
+      execute: async () => {
         try {
           const result = await tutor.handleQuizCommand();
           return { success: true, message: result };
@@ -114,7 +114,7 @@ const centaurTutorPlugin = {
       name: "centaur_report",
       description: "현재 학습 현황 대시보드를 확인합니다.",
       parameters: { type: "object", properties: {} },
-      handler: async () => {
+      execute: async () => {
         try {
           const result = tutor.getStatusReport();
           return { success: true, message: result };
@@ -140,7 +140,7 @@ const centaurTutorPlugin = {
           },
         },
       },
-      handler: async (params: { level?: string }) => {
+      execute: async (params: { level?: string }) => {
         try {
           if (params.level) {
             return { success: true, message: `✅ 학습 수준이 "${params.level}"로 변경되었습니다.` };
