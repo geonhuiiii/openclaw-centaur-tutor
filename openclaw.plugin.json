@@ -1,5 +1,26 @@
 {
   "id": "openclaw-centaur-tutor",
   "version": "1.0.0",
-  "description": "켄타우로스 학습 코치 — AI 기반 간격 반복 학습 및 스파링 튜터"
+  "description": "켄타우로스 학습 코치 — AI 기반 간격 반복 학습 및 스파링 튜터",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "channel": {
+        "type": "string",
+        "default": "",
+        "description": "메시지를 보낼 채널 ID (예: telegram:123456789)"
+      },
+      "timezone": {
+        "type": "string",
+        "default": "Asia/Seoul",
+        "description": "cron 스케줄에 사용할 타임존"
+      },
+      "userLevel": {
+        "type": "string",
+        "default": "intermediate",
+        "description": "학습 난이도"
+      }
+    },
+    "required": []
+  }
 }
