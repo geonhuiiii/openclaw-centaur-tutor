@@ -11,14 +11,14 @@ const centaurTutorPlugin = {
     logger.info("[CentaurTutor] register() 진입");
 
     try {
-      // ── 가장 단순한 Tool 1개만 등록 ──
+      // ── Tool 등록 (MCP 표준: inputSchema 사용) ──
       api.registerTool({
         name: "centaur_report",
         description: "학습 현황 대시보드를 확인합니다.",
-        parameters: {
-          type: "object" as const,
+        inputSchema: {
+          type: "object",
           properties: {},
-          required: [] as string[],
+          required: [],
         },
         execute: async (_params: Record<string, unknown>) => {
           return "📈 학습 현황 대시보드\n─────────────────────────\n📚 전체 퀴즈: 0개\n📝 복기 횟수: 0회\n✅ 정답률: -\n\n💡 /study 로 학습을 시작하세요!";
@@ -29,12 +29,12 @@ const centaurTutorPlugin = {
       api.registerTool({
         name: "centaur_study",
         description: "새로운 학습 내용을 등록합니다.",
-        parameters: {
-          type: "object" as const,
+        inputSchema: {
+          type: "object",
           properties: {
-            text: { type: "string" as const, description: "학습 내용 텍스트" },
+            text: { type: "string", description: "학습 내용 텍스트" },
           },
-          required: ["text"] as string[],
+          required: ["text"],
         },
         execute: async (params: Record<string, unknown>) => {
           const text = String(params?.text ?? "");
@@ -46,12 +46,12 @@ const centaurTutorPlugin = {
       api.registerTool({
         name: "centaur_spar",
         description: "AI와 가상 스파링을 시작합니다.",
-        parameters: {
-          type: "object" as const,
+        inputSchema: {
+          type: "object",
           properties: {
-            topic: { type: "string" as const, description: "스파링 주제" },
+            topic: { type: "string", description: "스파링 주제" },
           },
-          required: ["topic"] as string[],
+          required: ["topic"],
         },
         execute: async (params: Record<string, unknown>) => {
           const topic = String(params?.topic ?? "일반");
@@ -63,10 +63,10 @@ const centaurTutorPlugin = {
       api.registerTool({
         name: "centaur_quiz",
         description: "복기 퀴즈를 받습니다.",
-        parameters: {
-          type: "object" as const,
+        inputSchema: {
+          type: "object",
           properties: {},
-          required: [] as string[],
+          required: [],
         },
         execute: async (_params: Record<string, unknown>) => {
           return "✅ 현재 복기 대상이 없습니다. /study 로 학습을 시작하세요!";
@@ -77,16 +77,16 @@ const centaurTutorPlugin = {
       api.registerTool({
         name: "centaur_level",
         description: "학습 난이도를 확인합니다.",
-        parameters: {
-          type: "object" as const,
+        inputSchema: {
+          type: "object",
           properties: {
             level: {
-              type: "string" as const,
+              type: "string",
               enum: ["beginner", "intermediate", "advanced", "expert"],
               description: "학습 수준",
             },
           },
-          required: [] as string[],
+          required: [],
         },
         execute: async (params: Record<string, unknown>) => {
           if (params?.level) {
