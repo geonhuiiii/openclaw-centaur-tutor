@@ -40,7 +40,9 @@ export class QuizStore {
     try {
       if (fs.existsSync(this.filePath)) {
         const raw = fs.readFileSync(this.filePath, "utf-8");
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        // 기본값과 병합하여 누락된 배열 필드 보장
+        return { ...this.createEmpty(), ...parsed };
       }
     } catch (err) {
       console.error("[QuizStore] DB 로드 실패:", err);

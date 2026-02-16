@@ -43,6 +43,15 @@ const centaurTutorPlugin = {
     let tutor: CentaurTutor;
     let cronJobs: CronJob[] = [];
 
+    // Tool이 Service.start()보다 먼저 호출될 수 있으므로 lazy init
+    const ensureTutor = (): CentaurTutor => {
+      if (!tutor) {
+        tutor = new CentaurTutor(config);
+        logger.info("[CentaurTutor] lazy 초기화 완료");
+      }
+      return tutor;
+    };
+
     // ────────────────────────────────────────────
     // Tool 등록: /study
     // ────────────────────────────────────────────
@@ -59,7 +68,8 @@ const centaurTutorPlugin = {
       },
       execute: async (params: { text: string; topic?: string }) => {
         try {
-          const result = await tutor.ingestStudyNote(params.text, params.topic);
+          const t = ensureTutor();
+          const result = await t.ingestStudyNote(params.text, params.topic);
           return { success: true, message: result.message };
         } catch (err) {
           return { success: false, error: `학습 내용 등록 실패: ${err}` };
@@ -82,7 +92,8 @@ const centaurTutorPlugin = {
       },
       execute: async (params: { topic: string }) => {
         try {
-          const { firstChallenge, systemPrompt } = tutor.startSparring(params.topic);
+          const t = ensureTutor();
+          const { firstChallenge, systemPrompt } = t.startSparring(params.topic);
           return { success: true, message: firstChallenge, systemPrompt };
         } catch (err) {
           return { success: false, error: `스파링 시작 실패: ${err}` };
@@ -99,7 +110,8 @@ const centaurTutorPlugin = {
       parameters: { type: "object", properties: {} },
       execute: async () => {
         try {
-          const result = await tutor.handleQuizCommand();
+          const t = ensureTutor();
+          const result = await t.handleQuizCommand();
           return { success: true, message: result };
         } catch (err) {
           return { success: false, error: `퀴즈 로드 실패: ${err}` };
@@ -116,7 +128,8 @@ const centaurTutorPlugin = {
       parameters: { type: "object", properties: {} },
       execute: async () => {
         try {
-          const result = tutor.getStatusReport();
+          const t = ensureTutor();
+          const result = t.getStatusReport();
           return { success: true, message: result };
         } catch (err) {
           return { success: false, error: `리포트 생성 실패: ${err}` };
@@ -142,10 +155,11 @@ const centaurTutorPlugin = {
       },
       execute: async (params: { level?: string }) => {
         try {
+          const t = ensureTutor();
           if (params.level) {
             return { success: true, message: `✅ 학습 수준이 "${params.level}"로 변경되었습니다.` };
           }
-          return { success: true, message: tutor.getLevelInfo() };
+          return { success: true, message: t.getLevelInfo() };
         } catch (err) {
           return { success: false, error: `레벨 확인 실패: ${err}` };
         }
@@ -159,7 +173,7 @@ const centaurTutorPlugin = {
       id: "centaur-tutor",
       start: async () => {
         // 튜터 인스턴스 초기화
-        tutor = new CentaurTutor(config);
+        ensureTutor();
 
         logger.info("[CentaurTutor] 초기화 완료");
         logger.info(`  채널: ${config.channel}`);
